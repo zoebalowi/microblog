@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1.4
+
+FROM python:3.8-alpine
+RUN adduser -D -u 1000 microblog
+
+WORKDIR /home/microblog
+
+# COPY . .
+COPY requirements/test.txt requirements/test.txt
+COPY requirements/prod.txt requirements/prod.txt
+COPY Makefile pytest.ini .pylintrc .coveragerc ./
+COPY docker/test.sh ./test.sh
+
+#ENV
+ENV FLASK_APP=microblog.py
+ENV PYTHONDONTWRITEBYTECODE=1
+
+
+RUN <<-EOF
+    python -m venv .venv
+    .venv/bin/pip3 install -r requirements/test.txt
+EOF
+
+ENV FLASK_APP=microblog.py
+
+RUN <<-EOF
+    chmod +x test.sh
+    chown -R microblog:microblog ./
+EOF
+
+
+RUN chmod +x test.sh
+
+ENTRYPOINT ["./test.sh"]

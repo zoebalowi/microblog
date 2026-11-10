@@ -21,3 +21,16 @@ services:
       DATABASE_URL: mysql+pymysql://microblog:microblogpassword@mysql/microblog
     depends_on:
       - mysql
+
+  test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_test
+    environment:
+      SECRET_KEY: my-secret-key
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      - ./app:/home/microblog/app
+      - ./tests:/home/microblog/tests
+    depends_on:
+      - mysql
