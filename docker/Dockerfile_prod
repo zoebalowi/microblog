@@ -3,6 +3,9 @@
 FROM python:3.8-alpine
 RUN adduser -D -u 1000 microblog
 
+ARG APP_VERSION
+ENV APP_VERSION=${APP_VERSION}
+
 WORKDIR /home/microblog
 
 # COPY . .
