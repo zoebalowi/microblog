@@ -1,0 +1,38 @@
+services:
+
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: microblog
+      MYSQL_USER: microblog
+      MYSQL_PASSWORD: microblogpassword
+      
+
+  prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_prod
+      args:
+        APP_VERSION: ${APP_VERSION:-dev}
+    ports:
+      - "8000:5000"
+    environment:
+      SECRET_KEY: my-secret-key
+      DATABASE_URL: mysql+pymysql://microblog:microblogpassword@mysql/microblog
+    depends_on:
+      - mysql
+
+  test:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile_test
+    environment:
+      SECRET_KEY: my-secret-key
+      PYTHONDONTWRITEBYTECODE: 1
+    volumes:
+      - ./app:/home/microblog/app
+      - ./tests:/home/microblog/tests
+    depends_on:
+      - mysql

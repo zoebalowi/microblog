@@ -55,6 +55,16 @@ def explore():
 
 
 
+@bp.route('/version')
+def version():
+    """
+    Route for version
+    """
+    app_version = current_app.config['VERSION']
+    return render_template('version.html', title='Version', version=app_version)
+
+
+
 @bp.route('/user/<username>')
 @login_required
 def user(username):

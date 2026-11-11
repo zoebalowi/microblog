@@ -1,0 +1,23 @@
+name: CI
+
+on: [push, pull_request, workflow_call]
+
+  jobs:
+    build:
+      runs-on: ubuntu-24.04
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Bygg produktimage
+          run: docker build -f docker/Dockerfile_prod -t deploy-example-backend .
+
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Kör tester i Docker Compose
+        run: docker compose up --build --exit-code-from test test
+
+env:
+  PYTHONDONTWRITEBYTECODE: 1
