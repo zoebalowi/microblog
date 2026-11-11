@@ -33,6 +33,7 @@ jobs:
         uses: docker/build-push-action@v7
         with:
           context: .
+          file: ./docker/Dockerfile_prod
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/microblog:${{ steps.version.outputs.version }}
           build-args: |
