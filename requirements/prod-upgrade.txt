@@ -1,5 +1,6 @@
 # Tested versions for the Trivy task in kmom03. Not used before then, the app in kmom01-02 runs on prod.txt.
-# Scanned with Trivy 0.75.0 on python:3.12.15-alpine3.24 in October 2026: no HIGH or CRITICAL findings.
+# Scanned with Trivy 0.75.0 on python:3.12.15-alpine3.24 in November 2026: no HIGH or CRITICAL findings in these Python packages.
+# The base image itself has HIGH findings in OS packages (krb5-libs). Fix them in your Dockerfile with `apk --no-cache upgrade`.
 # Check again with a new Trivy run before each course start, the vulnerability database changes.
 #
 # Replace the packages in prod.txt with these. The upgrade breaks things in the code, you fix those yourself.
