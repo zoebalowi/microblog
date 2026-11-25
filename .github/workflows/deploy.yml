@@ -38,4 +38,20 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/microblog:${{ steps.version.outputs.version }}
           build-args: |
             APP_VERSION=${{ steps.version.outputs.version }}
+
+            - name: Install Ansible
+        run: |
+          python3 -m pip install --user ansible
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+
+      - name: Deploy with Ansible
+        run: |
+          ansible-playbook \
+            -i ansible/prod_hosts \
+            ansible/start_instances.yml
             

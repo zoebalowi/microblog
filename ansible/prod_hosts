@@ -1,0 +1,9 @@
+[appserver]
+appserver1.devopsdizo.me
+appserver2.devopsdizo.me
+
+[loadbalancer]
+loadbalancer.devopsdizo.me
+
+[database]
+database.devopsdizo.me

@@ -1,29 +1,48 @@
+
 ---
-# The first run connects as the user Azure created (root_user). The role then creates server_user and removes root_user,
-# so on every later run root_user can not log in. This play checks which one works and sets ansible_user,
-# which takes precedence over remote_user in the next play. That makes the playbook possible to run again.
--   name: Find the user that can log in
-    hosts:
-        -   devops
-    gather_facts: False
-    remote_user: "{{ root_user }}"
-    tasks:
-        -   name: Try to log in as the Azure user
-            ping:
-            ignore_unreachable: True
-            register: azure_user_login
+- name: Select an available SSH user
+  hosts: devops
+  gather_facts: false
+  remote_user: "{{ root_user }}"
 
-        -   name: Use the server user, the Azure user is already removed
-            set_fact:
-                ansible_user: "{{ server_user }}"
-            when: azure_user_login is unreachable
+  tasks:
+    - name: Try to log in as the Azure user
+      ansible.builtin.ping:
+      ignore_unreachable: true
+      register: azure_user_login
 
+    - name: Try to log in as deploy if the Azure user is unavailable
+      ansible.builtin.ping:
+      ignore_unreachable: true
+      register: deploy_user_login
+      vars:
+        ansible_user: "{{ server_user }}"
+      when: azure_user_login is unreachable
 
+    - name: Stop if neither SSH user is available
+      ansible.builtin.fail:
+        msg: >-
+          Could not connect as {{ root_user }} or {{ server_user }}.
+          {{ root_user }} connection error:
+          {{ azure_user_login.msg | default('No SSH error details returned.') }}
+          {{ server_user }} connection error:
+          {{ deploy_user_login.msg | default('No SSH error details returned.') }}
+      when:
+        - azure_user_login is unreachable
+        - deploy_user_login is unreachable
 
--   hosts:
-        -   devops
-    remote_user: "{{ root_user }}"
-    become: yes
-    become_method: sudo
-    roles:
-        -   10-first-minutes
+    - name: Use deploy when its SSH login succeeds
+      ansible.builtin.set_fact:
+        ansible_user: "{{ server_user }}"
+      when:
+        - azure_user_login is unreachable
+        - deploy_user_login is not unreachable
+
+- name: Run first minutes role
+  hosts: devops
+  remote_user: "{{ root_user }}"
+  become: true
+  become_method: sudo
+
+  roles:
+    - 10-first-minutes
