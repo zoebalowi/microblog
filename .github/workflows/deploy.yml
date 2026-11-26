@@ -81,5 +81,5 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           MICROBLOG_IMAGE_TAG: ${{ steps.version.outputs.version }}
           MICROBLOG_SECRET_KEY: ${{ secrets.MICROBLOG_SECRET_KEY }}
-        run: ansible-playbook -i prod_hosts appserver.yml --private-key ~/.ssh/azure -e "db_password=$DB_PASSWORD"
+        run: ansible-playbook -i prod_hosts appserver.yml --private-key ~/.ssh/azure -e "mysql_password=$DB_PASSWORD"
           
