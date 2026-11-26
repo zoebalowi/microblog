@@ -1,6 +1,6 @@
 [appserver]
-appserver1.devopsdizo.me
-appserver2.devopsdizo.me
+appserver1.devopsdizo.me ansible_user=deploy
+appserver2.devopsdizo.me ansible_user=deploy
 
 [loadbalancer]
 94.245.105.191
