@@ -54,9 +54,7 @@ jobs:
           ansible-playbook \
             -i ansible/prod_hosts \
             ansible/start_instances.yml
-
-  deploy:
-  needs: publish
+            
   runs-on: ubuntu-24.04
   steps:
     - uses: actions/checkout@v7
