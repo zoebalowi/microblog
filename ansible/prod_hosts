@@ -3,7 +3,7 @@ appserver1.devopsdizo.me ansible_user=deploy
 appserver2.devopsdizo.me ansible_user=deploy
 
 [loadbalancer]
-94.245.105.191
+loadbalancer.devopsdizo.me ansible_user=deploy
 
 [database:children]
 loadbalancer
