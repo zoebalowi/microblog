@@ -1,6 +1,6 @@
 [appserver]
-appserver1.devopsdizo.me ansible_host=20.238.59.205
-appserver2.devopsdizo.me ansible_host=20.223.216.99
+appserver1.devopsdizo.me
+appserver2.devopsdizo.me
 
 [loadbalancer]
 94.245.105.191

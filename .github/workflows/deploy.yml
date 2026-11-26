@@ -68,12 +68,12 @@ jobs:
       - name: Save the ssh key
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "$PROD_SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
+          printf '%s\n' "$PROD_SSH_PRIVATE_KEY" > ~/.ssh/azure
+          chmod 600 ~/.ssh/azure
         env:
           PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
 
       - name: Run the playbook
         working-directory: ansible
-        run: ansible-playbook -i prod_hosts appserver.yml --private-key ~/.ssh/id_ed25519 -e "db_password=$DB_PASSWORD"
+        run: ansible-playbook -i prod_hosts appserver.yml --private-key ~/.ssh/azure -e "db_password=$DB_PASSWORD"
           
