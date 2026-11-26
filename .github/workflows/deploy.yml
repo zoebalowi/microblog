@@ -39,7 +39,7 @@ jobs:
           build-args: |
             APP_VERSION=${{ steps.version.outputs.version }}
 
-            - name: Install Ansible
+      - name: Install Ansible
         run: |
           python3 -m pip install --user ansible
 
