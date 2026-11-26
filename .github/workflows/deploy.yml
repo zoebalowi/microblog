@@ -46,8 +46,8 @@ jobs:
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > ~/.ssh/azure
+          chmod 600 ~/.ssh/azure
 
       - name: Deploy with Ansible
         run: |
@@ -76,5 +76,10 @@ jobs:
 
       - name: Run the playbook
         working-directory: ansible
+        env:
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          MICROBLOG_IMAGE_TAG: ${{ steps.version.outputs.version }}
+          MICROBLOG_SECRET_KEY: ${{ secrets.MICROBLOG_SECRET_KEY }}
         run: ansible-playbook -i prod_hosts appserver.yml --private-key ~/.ssh/azure -e "db_password=$DB_PASSWORD"
           
