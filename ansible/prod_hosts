@@ -1,0 +1,9 @@
+[appserver]
+appserver1.devopsdizo.me
+appserver2.devopsdizo.me
+
+[loadbalancer]
+94.245.105.191
+
+[database:children]
+loadbalancer
