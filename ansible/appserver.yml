@@ -1,0 +1,65 @@
+---
+- name: Deploy Microblog application
+  hosts: appserver
+  become: true
+  vars:
+    dockerhub_username: "{{ lookup('ansible.builtin.env', 'DOCKERHUB_USERNAME') }}"
+    microblog_image_tag: "{{ lookup('ansible.builtin.env', 'MICROBLOG_IMAGE_TAG') }}"
+    microblog_secret_key: "{{ lookup('ansible.builtin.env', 'MICROBLOG_SECRET_KEY') }}"
+
+  pre_tasks:
+    - name: Validate image and secret settings
+      ansible.builtin.assert:
+        that:
+          - dockerhub_username
+          - microblog_image_tag
+          - microblog_secret_key
+
+    - name: Wait until MySQL accepts the application credentials
+      ansible.builtin.command:
+        argv:
+          - docker
+          - exec
+          - microblog-mysql
+          - mysql
+          - --protocol=tcp
+          - --host=127.0.0.1
+          - "--user={{ mysql_user }}"
+          - "--password={{ mysql_password }}"
+          - "{{ mysql_database }}"
+          - --execute=SELECT 1
+      register: mysql_login
+      until: mysql_login.rc == 0
+      retries: 60
+      delay: 10
+      changed_when: false
+      no_log: true
+      delegate_to: "{{ groups['database'][0] }}"
+      run_once: true
+
+  tasks:
+    - name: Install Docker and Python
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Start Microblog container
+      community.docker.docker_container:
+        name: microblog
+        image: "{{ dockerhub_username }}/microblog:{{ microblog_image_tag }}"
+        state: started
+        restart_policy: unless-stopped
+        published_ports:
+          - "8000:5000"
+        env:
+          DATABASE_URL: "mysql+pymysql://{{ mysql_user }}:{{ mysql_password }}@{{ domain_name }}/{{ mysql_database }}"
+          SECRET_KEY: "{{ microblog_secret_key }}"

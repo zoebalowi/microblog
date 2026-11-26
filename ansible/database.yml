@@ -1,0 +1,40 @@
+
+---
+- name: Deploy MySQL database
+  hosts: database
+  become: true
+
+  tasks:
+    - name: Install Docker
+      ansible.builtin.apt:
+        name:
+          - docker.io
+          - python3-docker
+        state: present
+        update_cache: true
+
+    - name: Start and enable Docker
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Start MySQL container
+      community.docker.docker_container:
+        name: microblog-mysql
+        image: mysql:8.0
+        state: started
+        command: >-
+          --performance-schema=off
+          --innodb-buffer-pool-size=64M
+          --max-connections=50
+        restart_policy: unless-stopped
+        ports:
+          - "3306:3306"
+        volumes:
+          - mysql_data:/var/lib/mysql
+        env:
+          MYSQL_ROOT_PASSWORD: "{{ mysql_root_password }}"
+          MYSQL_DATABASE: "{{ mysql_database }}"
+          MYSQL_USER: "{{ mysql_user }}"
+          MYSQL_PASSWORD: "{{ mysql_password }}"

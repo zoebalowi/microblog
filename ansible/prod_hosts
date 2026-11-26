@@ -3,7 +3,7 @@ appserver1.devopsdizo.me
 appserver2.devopsdizo.me
 
 [loadbalancer]
-loadbalancer.devopsdizo.me
+94.245.105.191
 
-[database]
-database.devopsdizo.me
+[database:children]
+loadbalancer
