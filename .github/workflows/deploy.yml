@@ -46,23 +46,8 @@ jobs:
           cache: pip
           cache-dependency-path: requirements/deploy.txt
 
-      - name: Install Ansible and Azure dependencies
-        run: |
-          pip install -r requirements/deploy.txt
-          ansible-galaxy collection install -r ansible/requirements.yml
-          pip install -r ~/.ansible/collections/ansible_collections/azure/azcollection/requirements.txt
-
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PROD_SSH_PRIVATE_KEY }}" > ~/.ssh/azure
-          chmod 600 ~/.ssh/azure
-
-      - name: Deploy with Ansible
-        run: |
-          ansible-playbook \
-            -i ansible/prod_hosts \
-            ansible/start_instances.yml
+      - name: Install Ansible
+        run: pip install -r requirements/deploy.txt
 
       - name: Save the ssh key
         run: |
@@ -71,7 +56,6 @@ jobs:
           chmod 600 ~/.ssh/azure
         env:
           PROD_SSH_PRIVATE_KEY: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       - name: Run the playbook
         working-directory: ansible

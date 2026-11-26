@@ -2,9 +2,6 @@
 appserver1.devopsdizo.me
 appserver2.devopsdizo.me
 
-[local]
-localhost ansible_connection=local
-
 [loadbalancer]
 94.245.105.191
 
